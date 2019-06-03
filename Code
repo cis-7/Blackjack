@@ -15,8 +15,6 @@ string Player[52], Dealer[52];
 
 int playerInd = 0, dealerInd = 0, deckIndex = 51;
 
-int playerWager = 20;
-
 pair<string, int> Points[13];
 
 void initAndShuffleDeck() {
@@ -52,28 +50,6 @@ void printDeck() {
 	}
 
 }
-
-/*int askWager() {
-
-	int currBet;
-
-	cout << "How much do you want to bet? (max:" << playerWager << ") ";
-
-	cin >> currBet;
-
-	while (currBet>playerWager || currBet<0) {
-
-		cout << "Invalid Bet amount" << endl;
-
-		cout << "How much do you want to bet? (max:" << playerWager << ") ";
-
-		cin >> currBet;
-
-	}
-
-	return currBet; 
-
-}*/
 
 int cardToPoint(string card) {
 
