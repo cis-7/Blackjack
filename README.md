@@ -3,6 +3,8 @@
 
 Team Members: Elizabeth Arias, Joseph Murray, Jason Ibrahim
 
+Flowchart can be found in the repository as "Flowchart Diagram.pdf"
+
 1. What problems are you solving in this project?
 
 A. The purpose of this program is to simulate a game of Blackjack using one deck of 52 cards, and calculate the probability of player advantage. It should update the probability of player advantage with every card drawn.
