@@ -2,297 +2,445 @@
 #include <string>
 #include <algorithm>
 #include <ctime>
+
 using namespace std;
 
+// Global Variables
+
 string mainDeck[52];
-
 string suits[4] = { "C","D","H","S" };
-
+//string suits[4] = { " of Club"," of Diamond"," of Heart"," of Spade" };
 string cards[13] = { "2","3","4","5","6","7","8","9","10","J","Q","K","A" };
-
-//create arrays that will hold the value of cards drawn for the player and the dealer???
 string Player[52], Dealer[52];
+int playerInd = 0, dealerInd = 0, deckIndex = 51;
 
+pair<string, int> Points[13];
 
-//initialize the player and dealer index at 0 since at the beginning nothing has been drawn.
-int playerInd = 0, dealerInd = 0;
+int userSelection;		
+int playAgain;				
+bool playerChoice;
+string anyKey;
 
-//initialize the deck index to 51 to represent the 52 cards that can possibly be drawn
-int deckIndex = 51;
+int playerCardTotal;
+int dealerCardTotal;
 
-// declaring a vector of pairs with different data types
-pair <string, int> Points[13];
+// Bust Display
 
-//function that only loads the mainDeck array so that mainDeck can be used in the randomshuffle function
-void initAndShuffleDeck() {
+void bustDiplay()
+{
+	cout << " ____  _  _  ____  ________" << endl;
+	cout << "| __ )| || |/ ___||___  ___|" << endl;
+	cout << "|  _  | || |\\___ \\   |  |" << endl;
+	cout << "| |_) | || | __/ /   |  |" << endl;
+	cout << "|____/\\____/|___/    |__|" << endl << endl;
+}// End of bustDiplay
 
-	for (int i = 0; i<4; i++) {
+ // Blackjack Winner Display
 
-		for (int j = 0; j<13; j++) {
+void blackjackWinner()
+{
+	cout << " ____  _            _     _            _        " << endl;
+	cout << "| __ )| | __ _  ___| | __(_) __ _  ___| | __    " << endl;
+	cout << "|  _  | |/ _` |/ __| |/ /| |/ _` |/ __| |/ /    " << endl;
+	cout << "| |_) | | (_| | (__|   < | | (_| | (__|   <     " << endl;
+	cout << "|____/|_|\\__,_|\\___|_|\\_\\/ |\\__,_|\\___|_|\\_\\    " << endl;
+	cout << "                       |__/                     " << endl << endl;
+} // End of blackjackWinner
 
-			//having mainDeck is loaded by two arrays one that holds cards and one that holds suits
+  // Game rules
 
+void gameRules()
+{
+	char letsContinue;
+
+	cout << "\nA blackjack game has a dealer and one or more players.Each player plays against the dealer. All players\n";
+	cout << "are initially dealt two cards and the dealer is dealt one card face down and one face up (these are called\n";
+	cout << "the hole card and up card respectively).Each player can then hit(ask for an additional card) until her \n";
+	cout << "total exceeds 21 (this is called busting) or she decides to stand(stop taking cards for the rest of the hand).\n";
+	cout << "Face cards count as 10 and an ace may be counted as 1 or 11. After all of the players have finished, the\n";
+	cout << "dealer reveals the hole card and plays the hand with a fixed strategy : hit on 16 or less and stand on 17 or more.\n\n";
+	cout << "The player loses if she busts and wins if she does not bust and the dealer does(observe that if both the player\n";
+	cout << "and the dealer bust, the player loses).Otherwise, the player wins if her total is closer to 21 than the dealer's.\n";
+	cout << "If the player wins, she gets twice her bet; if she loses, she loses her money.If the dealer and player tie it is\n";
+	cout << "called a \"push;\" the player keeps her bet but does not earn any additional money.If the player's first two cards\n";
+	cout << "total 21, this is a blackjack and she wins 1.5 times her bet(unless the dealer also has a blackjack, in which\n";
+	cout << "case a tie results), so she gets back 2.5 times her bet.\n\n";
+
+	cout << "Type any letter and press [ENTER] to continue.\n\n";
+	cin >> letsContinue;
+	cout << endl;
+} // End of gameRules
+
+  // Shuffles the deck
+
+void initAndShuffleDeck()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 13; j++)
 			mainDeck[13 * i + j] = cards[j] + suits[i];
-
-		}
-
 	}
 
 	srand(time(0));
-
 	random_shuffle(&mainDeck[0], &mainDeck[52]);
-
 }
 
-//function which only outputs what is drawn from the mainDeck after two random cards are randomly selected
-/*void printDeck() {
+// Prints the values of the deck
 
-	for (int i = 0; i<4; i++) {
-
-		for (int j = 0; j<13; j++) {
-
+void printDeck()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 13; j++)
 			cout << mainDeck[13 * i + j] << " ";
 
-		}
-
 		cout << endl;
-
 	}
-}*/
+} // End of printDeck
 
-//function that loads the array with the points of the card drawn
-int cardToPoint(string card) {
-	//copy the characters from card from index 0 to it final index and store the characters into card
+int cardToPoint(string card)
+{
 	card = card.substr(0, card.length() - 1);
 
-	for (int i = 0; i<13; i++) {
-
-		if (Points[i].first == card) {
-
+	for (int i = 0; i < 13; i++)
+	{
+		if (Points[i].first == card)
 			return Points[i].second;
-
-
-		}
-
 	}
+} // End of cardToPoint
 
-}
+  // Gets player's point
 
-//function that retrieves the points the player has by iterating through the Player array and its indexes then it keeps a total of the points in the variable sum
+int getPointsPlayer()
+{
+	playerCardTotal = 0;
 
-int getPointsPlayer() {
+	for (int i = 0; i<playerInd; i++)
+		playerCardTotal += cardToPoint(Player[i]);
+	
+	return playerCardTotal;
 
-	int sum = 0;
+} // End of getPointsPlayer
 
-	for (int i = 0; i<playerInd; i++) {
+// Gets dealer's point
 
-		sum += cardToPoint(Player[i]);
+int getPointsDealer()
+{
+	dealerCardTotal = 0;
 
-	}
+	for (int i = 0; i<dealerInd; i++) 
+		dealerCardTotal += cardToPoint(Dealer[i]);
+	return dealerCardTotal;
 
-	return sum;
+} // End of getPointsDealer
 
-}
+// Allows the player to hit or stand
 
+char getAction()
+{
+	char Hit_or_Stand;
 
+	cout << "\nWould you like to Hit(H) or Stand(S)?\n\n";
+	cout << "\tS - Stand\n";
+	cout << "\tH - Hit\n\n";
+	cout << "Enter Command: ";
 
-int getPointsDealer() {
+	cin >> Hit_or_Stand;
 
-	int sum = 0;
-
-	for (int i = 0; i<dealerInd; i++) {
-
-		sum += cardToPoint(Dealer[i]);
-
-	}
-
-	return sum;
-
-}
-
-//function that carries out draw, it increments player array as mainDeck is decermented it also increments the dealer array as the mainDeck gets decremented
-void drawCardsFirstTime() {
-
-	Player[playerInd++] = mainDeck[deckIndex--];
-
-	Player[playerInd++] = mainDeck[deckIndex--];
-
-	//output Player cards by using the Player array???
-	cout << "Player Cards: " << Player[playerInd - 1] << " " << Player[playerInd - 2];
-
-	Dealer[dealerInd++] = mainDeck[deckIndex--];
-
-	//only cout the first card dealt to the dealer which is located a index zero
-	cout << "\tDealer Cards: " << Dealer[dealerInd - 1] << " |/|" << endl;
-
-	//The second card drawn but withheld from being outputted
-	Dealer[dealerInd++] = mainDeck[deckIndex--];
-
-}
-
-
-bool endGame() {
-
-	cout << "Enter 0 to Quit else 1: ";
-	char command;
-	cin >> command;
-
-
-	if (command == '0') {
-
-		return true;
-	}
-
-	return false;
-}
-
-
-char getAction() {
-
-	cout << "S - Stand" << endl;
-	cout << "H - Hit" << endl;
-	cout << "Enter the move you want to make: ";
-	char command;
-	cin >> command;
-
-
-	if (command == 'H' || command == 'S') {
-
-		return command;
-
-	}
-
-	else {
-
-		cout << "Invalid command" << endl;
-
+	if (Hit_or_Stand == 'H' || Hit_or_Stand == 'S' || Hit_or_Stand == 'h' || Hit_or_Stand == 's')
+		return Hit_or_Stand;
+	else
+	{
+		cout << "Invalid command.  Please enter \"H\" to hit or \"S\" to stand.\n";
 		getAction();
-
 	}
+} // End of getAction
 
-}
+// Allows player to hit
 
-//function which outputs the card dealt if user chooses to  Hit
+void playerHit()
+{
+	Player[playerInd++] = mainDeck[deckIndex--];
+	cout << "\nCard Drawn for Player: " << Player[playerInd - 1] << endl;
+} // End of playerHit
 
-void onHit() {
+// Allows dealer to hit
 
+void dealerHit()
+{
+	Dealer[dealerInd++] = mainDeck[deckIndex--];
+	cout << "\nCard Drawn for Dealer: " << Dealer[dealerInd - 1] << endl;
+} // End of dealerHit
+
+// Restarts the game
+
+void restart()
+{
+	playerInd = 0;
+	dealerInd = 0;
+	deckIndex = 51;
+	initAndShuffleDeck();
+} // End of restart
+
+  // Initial draw
+
+void drawCardsFirstTime()
+{
+	Player[playerInd++] = mainDeck[deckIndex--];
 	Player[playerInd++] = mainDeck[deckIndex--];
 
-	cout << "Card Drawn: " << Player[playerInd - 1] << endl;
+	cout << "Player Cards: " << Player[playerInd - 1] << " | " << Player[playerInd - 2];
+	getPointsPlayer();
+	cout << "\tPlayer card total: " << playerCardTotal << endl << endl;
 
-}
+	Dealer[dealerInd++] = mainDeck[deckIndex--];
+	Dealer[dealerInd++] = mainDeck[deckIndex--];
 
+	cout << "Dealer Cards: " << Dealer[dealerInd - 1] << " | " << Dealer[dealerInd - 2];
+	getPointsDealer();
+	cout << "\tDealer card total: " << dealerCardTotal << endl << endl;
 
-void restart() {
+} // End of drawCardsFirstTime
 
-	playerInd = 0;
+// Allows the user to play the game
 
-	dealerInd = 0;
-
-	deckIndex = 51;
-
-	initAndShuffleDeck();
-
-}
-
-
-
-void playGame() {
-
+void playGame()
+{
 	drawCardsFirstTime();
 
+	////////// Winning/losing conditions //////////
 
-	if (getPointsPlayer() == 21) {
+	// Player blackjack
 
-		if (endGame()) {
+	if (getPointsPlayer() == 21)
+	{
+		cout << "Player has\n";	
+		blackjackWinner();
+	}
+	 // Dealer blackjack
 
-			return;
-
-		}
-
+	if (getPointsDealer() == 21)
+	{
+		cout << "Dealer has\n";
+		blackjackWinner();
 	}
 
+	// Player takes their turn
 
-	while (getPointsPlayer() <= 21) {
+	if (getPointsPlayer() < 21)
+	{
+		while (getPointsPlayer() < 21)
+		{
+			char a = getAction();
 
-		char a = getAction();
-
-
-		if (a == 'H') {
-
-			onHit();
-
+			if ((a == 'H') || (a == 'h'))
+			{
+				cout << "Player decides to hit.\n"
+					 << "New card coming.\n";
+				playerHit();
+				getPointsPlayer();
+				cout << "\nPlayer new card total: " << playerCardTotal << endl << endl;
+			}
+			if ((a == 'S') || (a == 's'))
+			{
+				cout << "\nPlayer decides to stand.\n"
+					 << "No new cards coming for player.\n";
+				getPointsPlayer();
+				cout << "\nPlayer new card total: " << playerCardTotal << endl << endl;
+				break;
+			}
 		}
+	}
 
-		if (a == 'S') {
+	// Player bust
 
+	if (getPointsPlayer() > 21)
+	{
+		getPointsPlayer();
+		cout << "Player\n";
+		bustDiplay();
+	}
+
+	cout << "\nDealer's turn.\n\n";
+	// Dealer takes their turn (automatic hits/stands)
+
+	while (getPointsDealer() < 21)
+	{
+		if (getPointsDealer() < 17)
+		{
+			cout << "Dealer is going to hit.\n"
+				<< "New card coming.\n";
+			dealerHit();
+			getPointsDealer();
+			cout << "\nDealer new card total: " << dealerCardTotal << endl << endl;
+		}
+		else
+			break;
+	}
+		
+	// Dealer bust
+
+	if (getPointsDealer() > 21)
+	{
+		getPointsDealer();
+		cout << "\nDealer new card total: " << dealerCardTotal << endl << endl;
+		cout << "Dealer\n";
+		bustDiplay();
+	}
+
+	// Player wins
+
+	if (((getPointsPlayer() > getPointsDealer()) && (getPointsPlayer() <= 21)) ||
+		((getPointsPlayer() <= 21) && (getPointsDealer() > 21)))
+	{
+		getPointsPlayer();
+		cout << "\nPlayer new card total: " << playerCardTotal << endl;
+		getPointsDealer();
+		cout << "\nDealer new card total: " << dealerCardTotal << endl << endl;
+		cout << "Player wins!!!\n\n";
+	}
+
+	// Dealer wins
+
+	if (((getPointsDealer() > getPointsPlayer()) && (getPointsDealer() <= 21)) ||
+		((getPointsDealer() <= 21) && (getPointsPlayer() > 21)))
+	{
+		getPointsPlayer();
+		cout << "\nPlayer new card total: " << playerCardTotal << endl;
+		getPointsDealer();
+		cout << "\nDealer new card total: " << dealerCardTotal << endl << endl;
+		cout << "Dealer wins!!!\n\n";
+	}
+
+	// No winner
+
+	if ((getPointsDealer() == getPointsPlayer()) && (getPointsDealer() <= 21))
+	{
+		getPointsPlayer();
+		cout << "\nPlayer new card total: " << playerCardTotal << endl;
+		getPointsDealer();
+		cout << "\nDealer new card total: " << dealerCardTotal << endl << endl;
+		cout << "No winner!!!\n\n";
+	}
+		
+	// Dealer and Player bust
+
+	if ((getPointsDealer() > 21) && (getPointsPlayer() > 21))
+	{
+		getPointsPlayer();
+		cout << "\nPlayer new card total: " << playerCardTotal << endl;
+		getPointsDealer();
+		cout << "\nDealer new card total: " << dealerCardTotal << endl << endl;
+		cout << "Player and Dealer bust. No winner!!!\n\n";
+	}
+
+} // End of playGame
+
+// Changes the point from the vector
+
+void initPoints()
+{
+	Points[0] = make_pair("2", 2);
+	Points[1] = make_pair("3", 3);
+	Points[2] = make_pair("4", 4);
+	Points[3] = make_pair("5", 5);
+	Points[4] = make_pair("6", 6);
+	Points[5] = make_pair("7", 7);
+	Points[6] = make_pair("8", 8);
+	Points[7] = make_pair("9", 9);
+	Points[8] = make_pair("10", 10);
+	Points[9] = make_pair("J", 10);
+	Points[10] = make_pair("Q", 10);
+	Points[11] = make_pair("K", 10);
+	Points[12] = make_pair("A", 11);
+} // End of initPoints
+
+// Displays the main menu for user
+
+void mainMenu()
+{
+	// Main Screen options
+
+	do // Will continue to loop until user makes a valid selection
+	{
+		cout << "Please make your selection from the choices below.\n\n";
+		cout << "\t1  ----  Play Blackjack.\n";
+		cout << "\t2  ----  Rules.\n";
+		cout << "\t3  ----  Exit.\n";
+		cout << "\nPlease type 1, 2 or 3 and press [ENTER] to continue.\n\n";
+		cin >> userSelection;
+
+		switch (userSelection)
+		{
+		case 1: // Begin the game
+			do // Will allow user to play multiple times
+			{
+				initAndShuffleDeck();
+				initPoints();
+				playGame();
+
+				cout << "\nWould you like to play again?  Type \'1\' for yes and \'0\' for no.\n";
+				cout << "Press [ENTER] after choice.\t";
+				cin >> playAgain;
+
+				if (playAgain == 1)
+				{
+					cout << "\nGet ready.\n" << "Cards are being shuffled.\n";
+					cout << "Type any key and press [ENTER] to continue.\t";
+					cin >> anyKey;
+					cout << endl << "****************************************";
+					restart();
+					playerChoice = true;
+				}
+
+				else if (playAgain == 0)
+				{
+					cout << "\nThank you for playing BlackJack with us.\n\n";
+					playerChoice = false;
+					exit(0);
+				}
+				else
+					cout << "\nINVALID ENTRY.\n";
+
+			} while (playerChoice = true); // End while 				
 			break;
 
-		}
+		case 2: // Show rules
+			gameRules();
+			break;
 
-	}
+		case 3: // Exits the game
+			cout << "\nYou have chose to exit the game.  Goodbye.\n\n";
+			exit(0);
+			break;
 
+		default:
+			cout << "Invalid input\n\n";
+		} // End switch case
+	} while ((userSelection != 1) || (userSelection != 2) || (userSelection != 3));
+} // End of mainMenu
 
+// Main function
 
-	if (getPointsPlayer()>21) {
+int main()
+{
+	cout << "Welcome to \n";
+	cout << " ____  _            _     _            _        " << endl;
+	cout << "| __ )| | __ _  ___| | __(_) __ _  ___| | __    " << endl;
+	cout << "|  _  | |/ _` |/ __| |/ /| |/ _` |/ __| |/ /    " << endl;
+	cout << "| |_) | | (_| | (__|   < | | (_| | (__|   <     " << endl;
+	cout << "|____/|_|\\__,_|\\___|_|\\_\\/ |\\__,_|\\___|_|\\_\\    " << endl;
+	cout << "                       |__/                     " << endl;
+	cout << "Cheater's Edition\n\n";
 
-		cout << "Player Bust" << endl;
+	// Winning odds message
 
-	}
+	cout << "\tWith this version of blackjack, we like to give the winning edge to the player and not the dealer.\n";
+	cout << "\tAfter the first to cards are dealt, we will display the chances of you winning according to you\n";
+	cout << "\tand and the dealer's. This game will also allow you to see the all of the deaers card, to better\n";
+	cout << "\tyour odds of winning.\n\n";
 
-	else {
+	mainMenu();
 
-
-		if (getPointsDealer() <= 16) {
-
-			Dealer[dealerInd++] = mainDeck[deckIndex--];
-
-		}
-
-
-
-		if (getPointsDealer()>21) {
-
-			cout << "Dealer Bust" << endl;
-
-		}
-
-		else {
-
-
-			if (getPointsDealer() >= getPointsPlayer()) {
-
-				cout << "Player Lost" << endl;
-
-			}
-
-			else {
-
-				cout << "Player Won" << endl;
-
-			}
-
-		}
-
-	}
-
-	if (endGame()) {
-
-		return;
-	}
-
-	else {
-		restart();
-
-		playGame();
-
-	}
-}
-
-
-int main() {
-
-	initAndShuffleDeck();
-
-	playGame();
-}
+	return 0;
+} // End of main 
