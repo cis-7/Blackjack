@@ -20,15 +20,17 @@ int playerInd = 0, dealerInd = 0;
 //initialize the deck index to 51 to represent the 52 cards that can possibly be drawn
 int deckIndex = 51;
 
-// pair is used as a container that stores two different data types
+// declaring a vector of pairs with different data types
 pair <string, int> Points[13];
 
-
+//function that only loads the mainDeck array so that mainDeck can be used in the randomshuffle function
 void initAndShuffleDeck() {
 
 	for (int i = 0; i<4; i++) {
 
 		for (int j = 0; j<13; j++) {
+
+			//having mainDeck is loaded by two arrays one that holds cards and one that holds suits
 
 			mainDeck[13 * i + j] = cards[j] + suits[i];
 
@@ -42,8 +44,8 @@ void initAndShuffleDeck() {
 
 }
 
-
-void printDeck() {
+//function which only outputs what is drawn from the mainDeck after two random cards are randomly selected
+/*void printDeck() {
 
 	for (int i = 0; i<4; i++) {
 
@@ -56,11 +58,11 @@ void printDeck() {
 		cout << endl;
 
 	}
-}
+}*/
 
-
+//function that loads the array with the points of the card drawn
 int cardToPoint(string card) {
-
+	//copy the characters from card from index 0 to it final index and store the characters into card
 	card = card.substr(0, card.length() - 1);
 
 	for (int i = 0; i<13; i++) {
@@ -69,13 +71,14 @@ int cardToPoint(string card) {
 
 			return Points[i].second;
 
+
 		}
 
 	}
 
 }
 
-
+//function that retrieves the points the player has by iterating through the Player array and its indexes then it keeps a total of the points in the variable sum
 
 int getPointsPlayer() {
 
@@ -107,20 +110,22 @@ int getPointsDealer() {
 
 }
 
-
-
+//function that carries out draw, it increments player array as mainDeck is decermented it also increments the dealer array as the mainDeck gets decremented
 void drawCardsFirstTime() {
 
 	Player[playerInd++] = mainDeck[deckIndex--];
 
 	Player[playerInd++] = mainDeck[deckIndex--];
 
+	//output Player cards by using the Player array???
 	cout << "Player Cards: " << Player[playerInd - 1] << " " << Player[playerInd - 2];
 
 	Dealer[dealerInd++] = mainDeck[deckIndex--];
 
+	//only cout the first card dealt to the dealer which is located a index zero
 	cout << "\tDealer Cards: " << Dealer[dealerInd - 1] << " |/|" << endl;
 
+	//The second card drawn but withheld from being outputted
 	Dealer[dealerInd++] = mainDeck[deckIndex--];
 
 }
@@ -167,7 +172,7 @@ char getAction() {
 
 }
 
-
+//function which outputs the card dealt if user chooses to  Hit
 
 void onHit() {
 
