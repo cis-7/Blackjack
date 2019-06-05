@@ -10,7 +10,7 @@ A. The purpose of this program is to simulate a game of Blackjack using one deck
 
 2. What solutions are you implementing in the project? 
 
-A.
+A. Based on what the player draws the suggestion of whether to hit or stand is given and additionally they are given the probability of that the card the need to reach 21 can come up considering what has already been drawn by both the dealer and player.
 
 
 3. Provide explanation of calculations and algorithm implementation.
@@ -25,7 +25,7 @@ A. The purpose of this program is to simulate a game of Blackjack for the user a
 
 5. How is discrete structures implemented in the C++ program?
 
-A.
+A. The forumula for proability is integrated into the program in order to calculate the probability.
 
 
 6. What are the limitations of the program?
