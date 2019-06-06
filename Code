@@ -9,7 +9,6 @@ using namespace std;
 
 string mainDeck[52];
 string suits[4] = { "C","D","H","S" };
-//string suits[4] = { " of Club"," of Diamond"," of Heart"," of Spade" };
 string cards[13] = { "2","3","4","5","6","7","8","9","10","J","Q","K","A" };
 string Player[52], Dealer[52];
 int playerInd = 0, dealerInd = 0, deckIndex = 51;
@@ -24,6 +23,8 @@ string anyKey;
 int playerCardTotal;
 int dealerCardTotal;
 
+////////////////// Functions //////////////////
+
 // Bust Display
 
 void bustDiplay()
@@ -35,7 +36,7 @@ void bustDiplay()
 	cout << "|____/\\____/|___/    |__|" << endl << endl;
 }// End of bustDiplay
 
- // Blackjack Winner Display
+// Blackjack Winner Display
 
 void blackjackWinner()
 {
@@ -47,7 +48,7 @@ void blackjackWinner()
 	cout << "                       |__/                     " << endl << endl;
 } // End of blackjackWinner
 
-  // Game rules
+// Game rules
 
 void gameRules()
 {
@@ -71,7 +72,7 @@ void gameRules()
 	cout << endl;
 } // End of gameRules
 
-  // Shuffles the deck
+// Shuffles the deck
 
 void initAndShuffleDeck()
 {
@@ -85,19 +86,6 @@ void initAndShuffleDeck()
 	random_shuffle(&mainDeck[0], &mainDeck[52]);
 }
 
-// Prints the values of the deck
-
-void printDeck()
-{
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 13; j++)
-			cout << mainDeck[13 * i + j] << " ";
-
-		cout << endl;
-	}
-} // End of printDeck
-
 int cardToPoint(string card)
 {
 	card = card.substr(0, card.length() - 1);
@@ -109,7 +97,7 @@ int cardToPoint(string card)
 	}
 } // End of cardToPoint
 
-  // Gets player's point
+// Gets player's point
 
 int getPointsPlayer()
 {
@@ -128,21 +116,38 @@ int getPointsDealer()
 {
 	dealerCardTotal = 0;
 
-	for (int i = 0; i<dealerInd; i++) 
+	for (int i = 0; i < dealerInd; i++) 
 		dealerCardTotal += cardToPoint(Dealer[i]);
 	return dealerCardTotal;
 
 } // End of getPointsDealer
 
+// Prints the values of the deck
+
+void printDeck()
+{
+	cout << "Cards available:\n";
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 13; j++)
+			cout << mainDeck[13 * i + j] << " ";
+
+		cout << endl;
+	}
+} // End of printDeck
+
 // Allows the player to hit or stand
 
 char getAction()
 {
+	//printDeck();
+	//cout << "\nProbability of getting 21 with the next card: ";
+	
 	char Hit_or_Stand;
 
 	cout << "\nWould you like to Hit(H) or Stand(S)?\n\n";
-	cout << "\tS - Stand\n";
-	cout << "\tH - Hit\n\n";
+	cout << "\tH - Hit\n";
+	cout << "\tS - Stand\n\n";	
 	cout << "Enter Command: ";
 
 	cin >> Hit_or_Stand;
@@ -182,7 +187,7 @@ void restart()
 	initAndShuffleDeck();
 } // End of restart
 
-  // Initial draw
+// Initial draw
 
 void drawCardsFirstTime()
 {
@@ -201,6 +206,15 @@ void drawCardsFirstTime()
 	cout << "\tDealer card total: " << dealerCardTotal << endl << endl;
 
 } // End of drawCardsFirstTime
+
+// Probability
+
+void chanceOfWinning()
+{
+	getPointsPlayer();
+	printDeck();
+
+} // End of chanceOfWinning
 
 // Allows the user to play the game
 
@@ -236,8 +250,9 @@ void playGame()
 			if ((a == 'H') || (a == 'h'))
 			{
 				cout << "Player decides to hit.\n"
-					 << "New card coming.\n";
+					 << "New card coming.\n";				
 				playerHit();
+				//printDeck();
 				getPointsPlayer();
 				cout << "\nPlayer new card total: " << playerCardTotal << endl << endl;
 			}
@@ -283,7 +298,7 @@ void playGame()
 	if (getPointsDealer() > 21)
 	{
 		getPointsDealer();
-		cout << "\nDealer new card total: " << dealerCardTotal << endl << endl;
+		cout << "\nDealer final card total: " << dealerCardTotal << endl << endl;
 		cout << "Dealer\n";
 		bustDiplay();
 	}
@@ -294,9 +309,9 @@ void playGame()
 		((getPointsPlayer() <= 21) && (getPointsDealer() > 21)))
 	{
 		getPointsPlayer();
-		cout << "\nPlayer new card total: " << playerCardTotal << endl;
+		cout << "\nPlayer final card total: " << playerCardTotal << endl;
 		getPointsDealer();
-		cout << "\nDealer new card total: " << dealerCardTotal << endl << endl;
+		cout << "\nDealer final card total: " << dealerCardTotal << endl << endl;
 		cout << "Player wins!!!\n\n";
 	}
 
@@ -306,9 +321,9 @@ void playGame()
 		((getPointsDealer() <= 21) && (getPointsPlayer() > 21)))
 	{
 		getPointsPlayer();
-		cout << "\nPlayer new card total: " << playerCardTotal << endl;
+		cout << "\nPlayer final card total: " << playerCardTotal << endl;
 		getPointsDealer();
-		cout << "\nDealer new card total: " << dealerCardTotal << endl << endl;
+		cout << "\nDealer final card total: " << dealerCardTotal << endl << endl;
 		cout << "Dealer wins!!!\n\n";
 	}
 
@@ -317,9 +332,9 @@ void playGame()
 	if ((getPointsDealer() == getPointsPlayer()) && (getPointsDealer() <= 21))
 	{
 		getPointsPlayer();
-		cout << "\nPlayer new card total: " << playerCardTotal << endl;
+		cout << "\nPlayer final card total: " << playerCardTotal << endl;
 		getPointsDealer();
-		cout << "\nDealer new card total: " << dealerCardTotal << endl << endl;
+		cout << "\nDealer final card total: " << dealerCardTotal << endl << endl;
 		cout << "No winner!!!\n\n";
 	}
 		
@@ -328,9 +343,9 @@ void playGame()
 	if ((getPointsDealer() > 21) && (getPointsPlayer() > 21))
 	{
 		getPointsPlayer();
-		cout << "\nPlayer new card total: " << playerCardTotal << endl;
+		cout << "\nPlayer final card total: " << playerCardTotal << endl;
 		getPointsDealer();
-		cout << "\nDealer new card total: " << dealerCardTotal << endl << endl;
+		cout << "\nDealer final card total: " << dealerCardTotal << endl << endl;
 		cout << "Player and Dealer bust. No winner!!!\n\n";
 	}
 
